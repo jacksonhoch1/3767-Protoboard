@@ -27,7 +27,7 @@ public class SetGearbox extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_protoboard.setFalcons(m_speed.get());
+    m_protoboard.setFalcon(m_speed.get());
     //m_protoboard.setNeos(m_speed2.get());
   }
 
