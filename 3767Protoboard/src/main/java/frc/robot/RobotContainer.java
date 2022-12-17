@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.SetGearbox;
 import frc.robot.subsystems.Protoboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,7 +46,8 @@ public class RobotContainer {
     //JoystickButton runMotors = new JoystickButton(m_joystick, 1);
     //runMotors.whenPressed(new SetGearbox(m_protoboard, () -> m_joystick.getRawAxis(1)));
     //runMotors.whenPressed(new SetGearbox(m_protoboard, 0.10));
-    new SetGearbox(m_protoboard, () -> m_joystick.getRawAxis(1));
+    //new SetGearbox(m_protoboard, () -> m_joystick.getRawAxis(1));
+    new ArcadeDrive(m_protoboard, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(5));
   }
 
   /**
