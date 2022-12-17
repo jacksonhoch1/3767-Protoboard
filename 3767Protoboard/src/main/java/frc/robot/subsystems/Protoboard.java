@@ -13,13 +13,15 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.CAN_IDS;
 
 public class Protoboard extends SubsystemBase {
   /** Creates a new Protoboard. */
-  public final WPI_TalonFX m_testingFalcon, m_leftFront, m_leftRear, m_rightFront, m_rightRear;
-  public final CANSparkMax m_testingNeo;
+  public WPI_TalonFX m_testingFalcon, m_leftFront, m_leftRear, m_rightFront, m_rightRear;
+  public CANSparkMax m_testingNeo;
+  public DifferentialDrive m_differentialDrive;
 
   public Protoboard() {
     //configure motors
@@ -71,6 +73,8 @@ public class Protoboard extends SubsystemBase {
     m_rightRear.setInverted(TalonFXInvertType.FollowMaster);
     m_rightRear.setNeutralMode(NeutralMode.Brake);
 
+    this.m_differentialDrive = new DifferentialDrive(m_leftFront, m_rightFront);
+
   
 
 
@@ -85,6 +89,10 @@ public class Protoboard extends SubsystemBase {
   public void setFalcon(double speed) {
     m_testingFalcon.set(speed);
     
+  }
+
+  public void arcadeDrive(double xAxisThrottle, double zAxisRotation) {
+    this.m_differentialDrive.arcadeDrive(xAxisThrottle, zAxisRotation);
   }
  
 }
