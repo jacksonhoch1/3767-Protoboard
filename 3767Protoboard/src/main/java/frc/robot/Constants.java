@@ -13,9 +13,5 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public final class Protoboard {
-        public final class CAN_IDs {
-            static final int TestingFalcon = 3;
-        }
-    }
+    
 }
