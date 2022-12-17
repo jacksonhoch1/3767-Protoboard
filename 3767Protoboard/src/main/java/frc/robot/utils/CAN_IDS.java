@@ -7,10 +7,10 @@ public final class CAN_IDS {
     }
 
     public final class Chassis {
-        public static final int leftFrontGearbox = 1;
-        public static final int leftRearGearbox = 11;
-        public static final int rightFrontGearbox = 2;
-        public static final int rightRearGearbox = 21;
+        public static final int leftFront = 1;
+        public static final int leftRear = 11;
+        public static final int rightFront = 2;
+        public static final int rightRear = 21;
     }
     
 }

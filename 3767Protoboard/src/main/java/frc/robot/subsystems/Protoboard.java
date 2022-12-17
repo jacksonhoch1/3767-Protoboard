@@ -18,7 +18,7 @@ import frc.robot.utils.CAN_IDS;
 
 public class Protoboard extends SubsystemBase {
   /** Creates a new Protoboard. */
-  public final WPI_TalonFX m_testingFalcon, m_rightFrontGearbox, m_rightRearGearbox;
+  public final WPI_TalonFX m_testingFalcon, m_leftFront, m_leftRear, m_rightFront, m_rightRear;
   public final CANSparkMax m_testingNeo;
 
   public Protoboard() {
@@ -39,20 +39,37 @@ public class Protoboard extends SubsystemBase {
     m_testingNeo.setInverted(false);
     m_testingNeo.setIdleMode(IdleMode.kBrake);
 
-    //right gearbox
-    //front motor config
-    m_rightFrontGearbox = new WPI_TalonFX(CAN_IDS.Chassis.rightFrontGearbox);
-    m_rightFrontGearbox.configFactoryDefault();
-    m_rightFrontGearbox.configAllSettings(configs);
-    m_rightFrontGearbox.setInverted(TalonFXInvertType.Clockwise);
-    m_rightFrontGearbox.setNeutralMode(NeutralMode.Brake);
+    //left gearbox
+    //left front motor config
+    m_leftFront = new WPI_TalonFX(CAN_IDS.Chassis.leftFront);
+    m_leftFront.configFactoryDefault();
+    m_leftFront.configAllSettings(configs);
+    m_leftFront.setInverted(TalonFXInvertType.Clockwise);
+    m_leftFront.setNeutralMode(NeutralMode.Brake);
 
-    //rear motor config
-    m_rightRearGearbox = new WPI_TalonFX(CAN_IDS.Chassis.rightRearGearbox);
-    m_rightRearGearbox.configFactoryDefault();
-    m_rightRearGearbox.configAllSettings(configs);
-    m_rightRearGearbox.setInverted(TalonFXInvertType.Clockwise);
-    m_rightRearGearbox.setNeutralMode(NeutralMode.Brake);
+    //left rear motor config
+    m_leftRear = new WPI_TalonFX(CAN_IDS.Chassis.leftRear);
+    m_leftRear.configFactoryDefault();
+    m_leftRear.configAllSettings(configs);
+    m_leftRear.follow(m_leftFront);
+    m_leftRear.setInverted(TalonFXInvertType.FollowMaster);
+    m_leftRear.setNeutralMode(NeutralMode.Brake);
+
+    //right gearbox
+    //right front motor config
+    m_rightFront = new WPI_TalonFX(CAN_IDS.Chassis.rightFront);
+    m_rightFront.configFactoryDefault();
+    m_rightFront.configAllSettings(configs);
+    m_rightFront.setInverted(TalonFXInvertType.CounterClockwise);
+    m_rightFront.setNeutralMode(NeutralMode.Brake);
+
+    //right rear motor config
+    m_rightRear = new WPI_TalonFX(CAN_IDS.Chassis.rightRear);
+    m_rightRear.configFactoryDefault();
+    m_rightRear.configAllSettings(configs);
+    m_rightRear.follow(m_rightFront);
+    m_rightRear.setInverted(TalonFXInvertType.FollowMaster);
+    m_rightRear.setNeutralMode(NeutralMode.Brake);
 
   
 
@@ -65,11 +82,9 @@ public class Protoboard extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setFalcons(double speed) {
-    m_rightFrontGearbox.set(speed);
-    m_rightRearGearbox.set(speed);
+  public void setFalcon(double speed) {
+    m_testingFalcon.set(speed);
     
   }
-
-  
+ 
 }
