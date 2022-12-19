@@ -18,6 +18,7 @@ public class ArcadeDrive extends CommandBase {
     m_protoboard = protoboard;
     m_throttle = xAxisThrottle;
     m_turn = zAxisRotate;
+    addRequirements(protoboard);
 
   }
 

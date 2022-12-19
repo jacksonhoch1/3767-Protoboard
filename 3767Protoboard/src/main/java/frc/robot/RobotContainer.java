@@ -47,7 +47,7 @@ public class RobotContainer {
     //runMotors.whenPressed(new SetGearbox(m_protoboard, () -> m_joystick.getRawAxis(1)));
     //runMotors.whenPressed(new SetGearbox(m_protoboard, 0.10));
     //new SetGearbox(m_protoboard, () -> m_joystick.getRawAxis(1));
-    new ArcadeDrive(m_protoboard, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(5));
+    m_protoboard.setDefaultCommand(getArcadeDriveCommand());
   }
 
   /**
@@ -58,5 +58,9 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
     return new InstantCommand();
+  }
+
+  public Command getArcadeDriveCommand() {
+    return new ArcadeDrive(m_protoboard, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(5));
   }
 }
