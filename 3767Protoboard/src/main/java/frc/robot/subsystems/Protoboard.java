@@ -91,6 +91,10 @@ public class Protoboard extends SubsystemBase {
     
   }
 
+  public void setNeo(double speed) {
+    m_testingNeo.set(speed);
+  }
+
   public void arcadeDrive(double xAxisThrottle, double zAxisRotation) {
     this.m_differentialDrive.arcadeDrive(-xAxisThrottle, zAxisRotation, true);
   }
