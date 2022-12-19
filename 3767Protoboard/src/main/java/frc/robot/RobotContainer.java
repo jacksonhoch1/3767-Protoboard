@@ -61,6 +61,6 @@ public class RobotContainer {
   }
 
   public Command getArcadeDriveCommand() {
-    return new ArcadeDrive(m_protoboard, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(5));
+    return new ArcadeDrive(m_protoboard, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(2));
   }
 }
