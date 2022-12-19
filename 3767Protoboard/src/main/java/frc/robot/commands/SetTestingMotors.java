@@ -29,11 +29,15 @@ public class SetTestingMotors extends CommandBase {
   @Override
   public void execute() {
     protoboard.setFalcon(falcon.get());
+    protoboard.setNeo(neo.get());
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    protoboard.setFalcon(0);
+    protoboard.setNeo(0);
+  }
 
   // Returns true when the command should end.
   @Override
