@@ -1,20 +1,20 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/**a command for controlling the testing motors on the protoboard */
 
 package frc.robot.commands;
 
+//wpi and java utilities
 import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+//subsystems
 import frc.robot.subsystems.Protoboard;
 
 public class SetTestingMotors extends CommandBase {
   Protoboard protoboard;
   Supplier<Double> falcon, neo;
-  /** Creates a new SetTestingMotors. */
+  /** Initializes SetTestingMotors. */
   public SetTestingMotors(Protoboard protoboard, Supplier<Double> falcon, Supplier<Double> neo) {
-    // Use addRequirements() here to declare subsystem dependencies.
+    //sets the global variables to arguments
     this.protoboard = protoboard;
     this.falcon = falcon;
     this.neo = neo;

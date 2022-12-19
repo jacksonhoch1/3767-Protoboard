@@ -1,9 +1,11 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
+//wpilib utilities
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.CAN_IDS;
+
+//vendor libraries
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -13,12 +15,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.CAN_IDS;
 
 public class Protoboard extends SubsystemBase {
-  /** Creates a new Protoboard. */
+  /** Initializes the Protoboard. */
   public WPI_TalonFX m_testingFalcon, m_leftFront, m_leftRear, m_rightFront, m_rightRear;
   public CANSparkMax m_testingNeo;
   public DifferentialDrive m_differentialDrive;
@@ -74,11 +73,6 @@ public class Protoboard extends SubsystemBase {
     m_rightRear.setNeutralMode(NeutralMode.Brake);
 
     this.m_differentialDrive = new DifferentialDrive(m_leftFront, m_rightFront);
-
-  
-
-
-
   }
 
   @Override
@@ -86,6 +80,12 @@ public class Protoboard extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  //Drive methods
+  public void arcadeDrive(double xAxisThrottle, double zAxisRotation) {
+    this.m_differentialDrive.arcadeDrive(-xAxisThrottle, zAxisRotation, true);
+  }
+
+  //testing motor functions
   public void setFalcon(double speed) {
     m_testingFalcon.set(speed);
     
@@ -93,9 +93,5 @@ public class Protoboard extends SubsystemBase {
 
   public void setNeo(double speed) {
     m_testingNeo.set(speed);
-  }
-
-  public void arcadeDrive(double xAxisThrottle, double zAxisRotation) {
-    this.m_differentialDrive.arcadeDrive(-xAxisThrottle, zAxisRotation, true);
   }
 }

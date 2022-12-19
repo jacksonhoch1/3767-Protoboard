@@ -5,14 +5,15 @@
 package frc.robot.commands;
 
 import java.util.function.Supplier;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
+
+//subsystems
 import frc.robot.subsystems.Protoboard;
 
 public class ArcadeDrive extends CommandBase {
   private final Supplier<Double> m_throttle, m_turn;
   private final Protoboard m_protoboard;
-  /** Creates a new ArcadeDrive. */
+  /** initializes the ArcadeDrive command  */
   public ArcadeDrive(Protoboard protoboard, Supplier<Double> xAxisThrottle, Supplier<Double> zAxisRotate) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_protoboard = protoboard;
