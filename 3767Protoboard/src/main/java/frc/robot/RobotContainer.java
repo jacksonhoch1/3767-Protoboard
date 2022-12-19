@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.SetTestingMotors;
 import frc.robot.subsystems.Protoboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -47,6 +48,12 @@ public class RobotContainer {
     //runMotors.whenPressed(new SetGearbox(m_protoboard, 0.10));
     //new SetGearbox(m_protoboard, () -> m_joystick.getRawAxis(1));
     m_protoboard.setDefaultCommand(getArcadeDriveCommand());
+
+    JoystickButton enableTestingMotors = new JoystickButton(m_joystick, 2);
+
+
+    enableTestingMotors.whileHeld(new SetTestingMotors(m_protoboard, () -> (m_joystick.getRawAxis(3) + 1) / 2, () -> (m_joystick.getRawAxis(4) + 1) / 2));
+
   }
 
   /**

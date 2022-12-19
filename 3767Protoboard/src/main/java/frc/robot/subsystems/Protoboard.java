@@ -38,7 +38,7 @@ public class Protoboard extends SubsystemBase {
     //testing NEO
     m_testingNeo = new CANSparkMax(CAN_IDS.Protoboard.testingNeo, MotorType.kBrushless);
     m_testingNeo.restoreFactoryDefaults();
-    m_testingNeo.setInverted(false);
+    m_testingNeo.setInverted(true);
     m_testingNeo.setIdleMode(IdleMode.kBrake);
 
     //left gearbox
