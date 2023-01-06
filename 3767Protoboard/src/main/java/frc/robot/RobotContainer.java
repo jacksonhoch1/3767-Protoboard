@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 //commands
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.SetTestingMotors;
-
+import frc.robot.commands.TankDrive;
 //subsystems
 import frc.robot.subsystems.Protoboard;
 
@@ -51,5 +51,9 @@ private void configureButtonBindings() {
   /**@return The arcade drive command*/
   public Command getArcadeDriveCommand() {
     return new ArcadeDrive(m_protoboard, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(2));
+  }
+
+  public Command getTankDriveCommand() {
+    return new TankDrive(m_protoboard, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(5));
   }
 }

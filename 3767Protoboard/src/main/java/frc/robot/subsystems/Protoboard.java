@@ -12,15 +12,17 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
 public class Protoboard extends SubsystemBase {
   /** Initializes the Protoboard. */
-  public WPI_TalonFX m_testingFalcon, m_leftFront, m_leftRear, m_rightFront, m_rightRear;
-  public CANSparkMax m_testingNeo;
-  public DifferentialDrive m_differentialDrive;
+  private WPI_TalonFX m_testingFalcon, m_leftFront, m_leftRear, m_rightFront, m_rightRear;
+  private CANSparkMax m_testingNeo;
+  private RelativeEncoder m_neoEncoder;
+  private DifferentialDrive m_differentialDrive;
 
   public Protoboard() {
     //configure motors
@@ -39,6 +41,7 @@ public class Protoboard extends SubsystemBase {
     m_testingNeo.restoreFactoryDefaults();
     m_testingNeo.setInverted(true);
     m_testingNeo.setIdleMode(IdleMode.kBrake);
+    m_neoEncoder = m_testingNeo.getEncoder();
 
     //left gearbox
     //left front motor config
@@ -85,6 +88,10 @@ public class Protoboard extends SubsystemBase {
     this.m_differentialDrive.arcadeDrive(-xAxisThrottle, zAxisRotation, true);
   }
 
+  public void tankDrive(double leftThrottle, double rightThrottle) {
+    this.m_differentialDrive.tankDrive(leftThrottle, rightThrottle);
+  }
+
   //testing motor functions
   public void setFalcon(double speed) {
     m_testingFalcon.set(speed);
@@ -93,5 +100,9 @@ public class Protoboard extends SubsystemBase {
 
   public void setNeo(double speed) {
     m_testingNeo.set(speed);
+  }
+
+  public double getNeoPos() {
+    return m_neoEncoder.getPosition();
   }
 }
