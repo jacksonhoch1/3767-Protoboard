@@ -14,6 +14,7 @@ public class TankDrive extends CommandBase {
     this.protoboard = protoboard;
     this.leftThrottle = leftThrottle;
     this.rightThrottle = rightThrottle;
+    addRequirements(protoboard);
 
   }
 

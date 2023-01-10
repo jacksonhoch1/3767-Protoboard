@@ -58,6 +58,6 @@ private void configureButtonBindings() {
 
   /**@return the tank drive command */
   public Command getTankDriveCommand() {
-    return new TankDrive(m_protoboard, () -> m_joystick.getRawAxis(1), () -> m_joystick.getRawAxis(5));
+    return new TankDrive(m_protoboard, () -> -m_joystick.getRawAxis(1), () -> -m_joystick.getRawAxis(5));
   }
 }
