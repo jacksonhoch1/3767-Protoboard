@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
 public class Protoboard extends SubsystemBase {
@@ -23,47 +22,22 @@ public class Protoboard extends SubsystemBase {
   private MotorBuilder motorBuilder = new MotorBuilder();
   private DifferentialDrive differentialDrive;
 
-  public Protoboard() {
-    testingFalcon = motorBuilder.createFalcon(CAN.testingFalcon.ID, null, NeutralMode.Brake, false);
+  
 
-    //testing NEO
-    testingNeo = new CANSparkMax(CAN_IDS.Protoboard.testingNeo, MotorType.kBrushless);
-    testingNeo.restoreFactoryDefaults();
-    testingNeo.setInverted(true);
-    testingNeo.setIdleMode(IdleMode.kBrake);
+  public Protoboard() {
+    //testing motors
+    testingFalcon = motorBuilder.createFalcon(CAN.testingFalcon.ID, null, NeutralMode.Brake, false);
+    testingNeo = motorBuilder.createNeo(CAN.testingNeo.ID, null, IdleMode.kBrake, false);
     neoEncoder = testingNeo.getEncoder();
 
     //left gearbox
-    //left front motor config
-    leftFront = new WPI_TalonFX(CAN_IDS.Chassis.leftFront);
-    leftFront.configFactoryDefault();
-    leftFront.configAllSettings(configs);
-    leftFront.setInverted(TalonFXInvertType.Clockwise);
-    leftFront.setNeutralMode(NeutralMode.Brake);
-
-    //left rear motor config
-    leftRear = new WPI_TalonFX(CAN_IDS.Chassis.leftRear);
-    leftRear.configFactoryDefault();
-    leftRear.configAllSettings(configs);
-    leftRear.follow(leftFront);
-    leftRear.setInverted(TalonFXInvertType.FollowMaster);
-    leftRear.setNeutralMode(NeutralMode.Brake);
+    leftFront = motorBuilder.createFalcon(CAN.leftFront.ID, null, NeutralMode.Brake, false);
+    leftRear = motorBuilder.createFalcon(CAN.leftRear.ID, leftFront, NeutralMode.Brake, false);
 
     //right gearbox
-    //right front motor config
-    rightFront = new WPI_TalonFX(CAN_IDS.Chassis.rightFront);
-    rightFront.configFactoryDefault();
-    rightFront.configAllSettings(configs);
-    rightFront.setInverted(TalonFXInvertType.CounterClockwise);
-    rightFront.setNeutralMode(NeutralMode.Brake);
+    rightFront = motorBuilder.createFalcon(CAN.rightFront.ID, null, NeutralMode.Brake, true);
+    rightRear = motorBuilder.createFalcon(CAN.rightRear.ID, rightFront, NeutralMode.Brake, true);
 
-    //right rear motor config
-    rightRear = new WPI_TalonFX(CAN_IDS.Chassis.rightRear);
-    rightRear.configFactoryDefault();
-    rightRear.configAllSettings(configs);
-    rightRear.follow(rightFront);
-    rightRear.setInverted(TalonFXInvertType.FollowMaster);
-    rightRear.setNeutralMode(NeutralMode.Brake);
 
     this.differentialDrive = new DifferentialDrive(leftFront, rightFront);
   }
