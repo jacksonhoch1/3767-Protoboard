@@ -3,13 +3,11 @@ package frc.robot.subsystems;
 //wpilib utilities
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.CAN_IDS;
+import frc.robot.utils.IDMap.CAN;
+import frc.robot.utils.MotorBuilder;
 
 //vendor libraries
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -19,63 +17,55 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class Protoboard extends SubsystemBase {
   /** Initializes the Protoboard. */
-  private WPI_TalonFX m_testingFalcon, m_leftFront, m_leftRear, m_rightFront, m_rightRear;
-  private CANSparkMax m_testingNeo;
-  private RelativeEncoder m_neoEncoder;
-  private DifferentialDrive m_differentialDrive;
+  private WPI_TalonFX testingFalcon, leftFront, leftRear, rightFront, rightRear;
+  private CANSparkMax testingNeo;
+  private RelativeEncoder neoEncoder;
+  private MotorBuilder motorBuilder = new MotorBuilder();
+  private DifferentialDrive differentialDrive;
 
   public Protoboard() {
-    //configure motors
-    TalonFXConfiguration configs = new TalonFXConfiguration();
-    configs.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-
-    //testing falcon
-    m_testingFalcon = new WPI_TalonFX(CAN_IDS.Protoboard.testingFalcon);
-    m_testingFalcon.configFactoryDefault();
-    m_testingFalcon.configAllSettings(configs);
-    m_testingFalcon.setInverted(TalonFXInvertType.Clockwise);
-    m_testingFalcon.setNeutralMode(NeutralMode.Brake);
+    testingFalcon = motorBuilder.createFalcon(CAN.testingFalcon.ID, null, NeutralMode.Brake, false);
 
     //testing NEO
-    m_testingNeo = new CANSparkMax(CAN_IDS.Protoboard.testingNeo, MotorType.kBrushless);
-    m_testingNeo.restoreFactoryDefaults();
-    m_testingNeo.setInverted(true);
-    m_testingNeo.setIdleMode(IdleMode.kBrake);
-    m_neoEncoder = m_testingNeo.getEncoder();
+    testingNeo = new CANSparkMax(CAN_IDS.Protoboard.testingNeo, MotorType.kBrushless);
+    testingNeo.restoreFactoryDefaults();
+    testingNeo.setInverted(true);
+    testingNeo.setIdleMode(IdleMode.kBrake);
+    neoEncoder = testingNeo.getEncoder();
 
     //left gearbox
     //left front motor config
-    m_leftFront = new WPI_TalonFX(CAN_IDS.Chassis.leftFront);
-    m_leftFront.configFactoryDefault();
-    m_leftFront.configAllSettings(configs);
-    m_leftFront.setInverted(TalonFXInvertType.Clockwise);
-    m_leftFront.setNeutralMode(NeutralMode.Brake);
+    leftFront = new WPI_TalonFX(CAN_IDS.Chassis.leftFront);
+    leftFront.configFactoryDefault();
+    leftFront.configAllSettings(configs);
+    leftFront.setInverted(TalonFXInvertType.Clockwise);
+    leftFront.setNeutralMode(NeutralMode.Brake);
 
     //left rear motor config
-    m_leftRear = new WPI_TalonFX(CAN_IDS.Chassis.leftRear);
-    m_leftRear.configFactoryDefault();
-    m_leftRear.configAllSettings(configs);
-    m_leftRear.follow(m_leftFront);
-    m_leftRear.setInverted(TalonFXInvertType.FollowMaster);
-    m_leftRear.setNeutralMode(NeutralMode.Brake);
+    leftRear = new WPI_TalonFX(CAN_IDS.Chassis.leftRear);
+    leftRear.configFactoryDefault();
+    leftRear.configAllSettings(configs);
+    leftRear.follow(leftFront);
+    leftRear.setInverted(TalonFXInvertType.FollowMaster);
+    leftRear.setNeutralMode(NeutralMode.Brake);
 
     //right gearbox
     //right front motor config
-    m_rightFront = new WPI_TalonFX(CAN_IDS.Chassis.rightFront);
-    m_rightFront.configFactoryDefault();
-    m_rightFront.configAllSettings(configs);
-    m_rightFront.setInverted(TalonFXInvertType.CounterClockwise);
-    m_rightFront.setNeutralMode(NeutralMode.Brake);
+    rightFront = new WPI_TalonFX(CAN_IDS.Chassis.rightFront);
+    rightFront.configFactoryDefault();
+    rightFront.configAllSettings(configs);
+    rightFront.setInverted(TalonFXInvertType.CounterClockwise);
+    rightFront.setNeutralMode(NeutralMode.Brake);
 
     //right rear motor config
-    m_rightRear = new WPI_TalonFX(CAN_IDS.Chassis.rightRear);
-    m_rightRear.configFactoryDefault();
-    m_rightRear.configAllSettings(configs);
-    m_rightRear.follow(m_rightFront);
-    m_rightRear.setInverted(TalonFXInvertType.FollowMaster);
-    m_rightRear.setNeutralMode(NeutralMode.Brake);
+    rightRear = new WPI_TalonFX(CAN_IDS.Chassis.rightRear);
+    rightRear.configFactoryDefault();
+    rightRear.configAllSettings(configs);
+    rightRear.follow(rightFront);
+    rightRear.setInverted(TalonFXInvertType.FollowMaster);
+    rightRear.setNeutralMode(NeutralMode.Brake);
 
-    this.m_differentialDrive = new DifferentialDrive(m_leftFront, m_rightFront);
+    this.differentialDrive = new DifferentialDrive(leftFront, rightFront);
   }
 
   @Override
@@ -85,24 +75,23 @@ public class Protoboard extends SubsystemBase {
 
   //Drive methods
   public void arcadeDrive(double xAxisThrottle, double zAxisRotation) {
-    this.m_differentialDrive.arcadeDrive(-xAxisThrottle, zAxisRotation, true);
+    this.differentialDrive.arcadeDrive(-xAxisThrottle, zAxisRotation, true);
   }
 
   public void tankDrive(double leftThrottle, double rightThrottle) {
-    this.m_differentialDrive.tankDrive(leftThrottle, rightThrottle);
+    this.differentialDrive.tankDrive(leftThrottle, rightThrottle);
   }
 
   //testing motor functions
   public void setFalcon(double speed) {
-    m_testingFalcon.set(speed);
-    
+    testingFalcon.set(speed);
   }
 
   public void setNeo(double speed) {
-    m_testingNeo.set(speed);
+    testingNeo.set(speed);
   }
 
   public double getNeoPos() {
-    return m_neoEncoder.getPosition();
+    return neoEncoder.getPosition();
   }
 }
