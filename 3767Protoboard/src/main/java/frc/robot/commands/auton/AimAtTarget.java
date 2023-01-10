@@ -1,30 +1,41 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands.auton;
 
+import org.photonvision.targeting.PhotonPipelineResult;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Protoboard;
 
 public class AimAtTarget extends CommandBase {
-  /** Creates a new AimAtTarget. */
-  public AimAtTarget() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  /** Initializes a new AimAtTarget command. */
+  final Protoboard protoboard;
+  final double kP = 0.1;
+  final double kD = 0.0;
+  PIDController turnController = new PIDController(kP, 0.0, kD);
+  PhotonPipelineResult result;
+  double turningSpeed;
+  public AimAtTarget(Protoboard protoboard) {
+    this.protoboard = protoboard;
+    addRequirements(protoboard);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    result = protoboard.getCameraResult();
+    if (result.hasTargets()) {
+      turningSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0.0);
+      protoboard.arcadeDrive(0.0, turningSpeed);
+    } else {
+      protoboard.arcadeDrive(0.0, 0.0);
+    }
+  }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
