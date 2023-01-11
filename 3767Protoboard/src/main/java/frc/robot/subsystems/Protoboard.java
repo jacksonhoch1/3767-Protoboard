@@ -13,6 +13,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 
 public class Protoboard extends SubsystemBase {
   /** Initializes the Protoboard. */
@@ -22,7 +25,7 @@ public class Protoboard extends SubsystemBase {
   private MotorBuilder motorBuilder = new MotorBuilder();
   private DifferentialDrive differentialDrive;
 
-  
+  private PhotonCamera camera  = new PhotonCamera("3767camera");
 
   public Protoboard() {
     //testing motors
@@ -67,5 +70,10 @@ public class Protoboard extends SubsystemBase {
 
   public double getNeoPos() {
     return neoEncoder.getPosition();
+  }
+
+  //camera methods
+  public PhotonPipelineResult getCameraResult() {
+    return camera.getLatestResult();
   }
 }

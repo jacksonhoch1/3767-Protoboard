@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
 //wpilib
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 //commands
 import frc.robot.commands.SetTestingMotors;
+import frc.robot.commands.auton.AimAtTarget;
 import frc.robot.commands.chassis.ArcadeDrive;
 import frc.robot.commands.chassis.TankDrive;
 
@@ -37,11 +39,13 @@ private void configureButtonBindings() {
 
     //button creation
     JoystickButton enableTestingMotors = new JoystickButton(m_joystick, 2);
+    JoystickButton aimAtTarget = new JoystickButton(m_joystick, 3);
 
     //button execution
     enableTestingMotors.whileHeld(new SetTestingMotors(m_protoboard, 
       () -> (m_joystick.getRawAxis(3) + 1) / 2,     //the arithmetic in these lines changes the trigger output 
       () -> (m_joystick.getRawAxis(4) + 1) / 2));   //to be 0.0 to 1.0, instead of -1.0 to 1.0
+    aimAtTarget.whileHeld(new AimAtTarget(m_protoboard));
 
   }
 
