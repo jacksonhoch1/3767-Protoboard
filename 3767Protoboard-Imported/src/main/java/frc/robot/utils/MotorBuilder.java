@@ -31,8 +31,8 @@ public class MotorBuilder {
         motor.configFactoryDefault();
         motor.configAllSettings(configs);
         motor.setNeutralMode(neutralMode);
-        //motor.configVoltageCompSaturation(12);
-        //motor.enableVoltageCompensation(true);
+        motor.configVoltageCompSaturation(12);
+        motor.enableVoltageCompensation(true);
         if (leader != null) {
             motor.follow(leader);
             if (isInverted) {
