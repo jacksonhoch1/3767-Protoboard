@@ -28,7 +28,7 @@ public class AimAtTarget extends CommandBase {
     result = protoboard.getCameraResult();
     if (result.hasTargets()) {
       turningSpeed = turnController.calculate(result.getBestTarget().getYaw(), 0.0);
-      protoboard.arcadeDrive(0.0, -(0.2 * turningSpeed));
+      protoboard.arcadeDrive(0.0, (0.2 * turningSpeed));
       Dashboard.HAS_TARGET.put(true);
       Dashboard.TURN_TARGET.put(turningSpeed);
     } else {

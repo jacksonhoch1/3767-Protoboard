@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -15,13 +16,15 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    //9:62, 20:28
-    // 6.89  1.4
+    //10:60, 16:32
+    // 6        2
     public static final double WHEEL_DIAMETER_INCHES = 4.25;
     public static final double ENCODER_COUNTS_PER_REV = 2048;
-    public static final double GEAR_RATIO = 9.64;
+    public static final double GEAR_RATIO = 12;
     public static final double WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER_INCHES * Math.PI;
     public static final double WHEEL_CIRCUMFERENCE_METERS = Units.inchesToMeters(WHEEL_CIRCUMFERENCE_INCHES);
     public static final double COUNTS_PER_METER = (GEAR_RATIO * ENCODER_COUNTS_PER_REV) / WHEEL_CIRCUMFERENCE_METERS;
+    public static final double TRACK_WIDTH = Units.inchesToMeters(22.082);
+    public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(TRACK_WIDTH);
 
 }
