@@ -19,7 +19,7 @@ public class ResetOdometry extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    protoboard.resetOdometry();
+    protoboard.resetOdometry(protoboard.getPose2d());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

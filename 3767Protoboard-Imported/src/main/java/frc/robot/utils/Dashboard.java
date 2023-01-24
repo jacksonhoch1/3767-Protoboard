@@ -12,7 +12,8 @@ public class Dashboard {
         TURN_TARGET = Entry.getDoubleEntry("Target turning speed", 0.0);
     
         public static final Entry<Boolean>
-            HAS_TARGET = Entry.getBooleanEntry("Has Target", false);
+            HAS_TARGET = Entry.getBooleanEntry("Has Target", false),
+            PRIMARY_SOLENOID_POSITION = Entry.getBooleanEntry("Primary solenoid position", false);
 
     public Dashboard() {}
 

@@ -1,25 +1,39 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 //wpilib utilities
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.IDMap.CAN;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utils.MotorBuilder;
 
 //vendor libraries
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.kauailabs.navx.frc.AHRS;
+
+import java.util.Map;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -35,6 +49,7 @@ public class Protoboard extends SubsystemBase {
   private AHRS gyro = new AHRS();
   private DifferentialDriveOdometry odometry;
   private Field2d field = new Field2d();
+  private DoubleSolenoid primaryDoubleSolenoid;
 
   private PhotonCamera camera  = new PhotonCamera("OV5647");
 
@@ -53,12 +68,13 @@ public class Protoboard extends SubsystemBase {
     rightFront = motorBuilder.createFalcon(CAN.rightFront.ID, null, NeutralMode.Brake, false);
     rightRear = motorBuilder.createFalcon(CAN.rightRear.ID, rightFront, NeutralMode.Brake, false);
 
+    primaryDoubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 7, 8);
+    primaryDoubleSolenoid.set(Value.kReverse);
+
 
     this.differentialDrive = new DifferentialDrive(leftFront, rightFront);
-
     gyro.reset();
     resetEncoders();
-
     odometry = new DifferentialDriveOdometry(getGyroRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
 
     SmartDashboard.putData("field", field);
@@ -73,11 +89,17 @@ public class Protoboard extends SubsystemBase {
 
   //Drive methods
   public void arcadeDrive(double xAxisThrottle, double zAxisRotation) {
-    this.differentialDrive.arcadeDrive(-xAxisThrottle, zAxisRotation, true);
+    differentialDrive.arcadeDrive(-xAxisThrottle, zAxisRotation, true);
   }
 
   public void tankDrive(double leftThrottle, double rightThrottle) {
-    this.differentialDrive.tankDrive(leftThrottle, rightThrottle);
+    differentialDrive.tankDrive(leftThrottle, rightThrottle);
+  }
+
+  public void tankDriveVolts(double leftVolts, double rightVolts) {
+    leftFront.setVoltage(rightVolts);
+    rightFront.setVoltage(leftVolts);
+    differentialDrive.feed();
   }
 
   //encoder methods
@@ -108,6 +130,7 @@ public class Protoboard extends SubsystemBase {
     leftFront.setSelectedSensorPosition(0);
     rightFront.setSelectedSensorPosition(0);
   }
+
   //testing motor functions
   public void setFalcon(double speed) {
     testingFalcon.set(speed);
@@ -149,12 +172,57 @@ public class Protoboard extends SubsystemBase {
     resetGyro();
   }
 
-  public void resetOdometry() {
+  public void resetOdometry(Pose2d pose) {
     resetAll();
-    odometry.resetPosition(Rotation2d.fromDegrees(0), 0, 0, odometry.getPoseMeters());
+    odometry.resetPosition(getGyroRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters(), pose);
   }
 
   public Pose2d getPose2d() {
     return odometry.getPoseMeters();
-  }  
+  }
+
+
+  public Command getRamseteCommand(String trajName, boolean resetPose) {
+    Map<String, Trajectory> paths = RobotContainer.paths;
+    Trajectory traj = RobotContainer.paths.get(trajName);
+    SequentialCommandGroup commands = new SequentialCommandGroup();
+    if (resetPose) commands.addCommands(new InstantCommand(() -> resetOdometry(traj.getInitialPose())));
+    commands.addCommands(new InstantCommand(() -> field.getObject("traj").setTrajectory(traj)));
+
+    commands.addCommands(new RamseteCommand(
+      traj,
+      this::getPose2d,
+      new RamseteController(),
+      new SimpleMotorFeedforward(
+        Constants.Chassis.kS,
+        Constants.Chassis.kV,
+        Constants.Chassis.kA
+        ),
+        Constants.driveKinematics,
+        this::getWheelSpeeds,
+        new PIDController(Constants.Chassis.kP, 0.0, 0.0),
+        new PIDController(Constants.Chassis.kP, 0.0, 0.0),
+        this::tankDriveVolts,
+        this
+    ));
+    return commands;
+  }
+
+  //Pneumatics methods
+  public void setPrimarySolenoid(Value value) {
+    primaryDoubleSolenoid.set(value);
+  }
+
+  public void extendPrimarySolenoid() {
+    primaryDoubleSolenoid.set(Value.kForward);
+  }
+
+  public void retractPrimarySolenoid() {
+    primaryDoubleSolenoid.set(Value.kReverse);
+  }
+
+  public void disablePrimarySolenoid() {
+    primaryDoubleSolenoid.set(Value.kOff);
+  }
+  
 }

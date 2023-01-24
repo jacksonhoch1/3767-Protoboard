@@ -6,6 +6,8 @@ import frc.robot.subsystems.Protoboard;
 public class Test1 extends SequentialCommandGroup {
   /** Creates a new Test1. */
   public Test1(Protoboard protoboard) {
-    addCommands();
+    addCommands(
+      protoboard.getRamseteCommand("Test1", true)
+    );
   }
 }

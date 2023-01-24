@@ -16,7 +16,7 @@ public class AutonomousLoader {
     private SendableChooser chooser;
 
     public AutonomousLoader(Protoboard protoboard, Map<String, Trajectory> paths) {
-        autoRoutes.put(Route.MobilityEngage, new Test1(protoboard));
+        autoRoutes.put(Route.Test1, new Test1(protoboard));
 
         this.chooser = createSendableChooser();
     }
@@ -39,6 +39,6 @@ public class AutonomousLoader {
     }
 
     public enum Route {
-        MobilityEngage
+        Test1
     }
 }

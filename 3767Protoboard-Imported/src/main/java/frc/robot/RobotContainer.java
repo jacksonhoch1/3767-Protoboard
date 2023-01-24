@@ -11,17 +11,21 @@ import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.math.trajectory.Trajectory;
 
 import frc.robot.utils.AutonomousLoader;
-
+import frc.robot.utils.Dashboard;
 //wpilib
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.commands.SetSolenoid;
 //commands
 import frc.robot.commands.SetTestingMotors;
 import frc.robot.commands.auton.AimAtTarget;
 import frc.robot.commands.auton.ResetOdometry;
+import frc.robot.commands.auton.Test1;
 import frc.robot.commands.chassis.ArcadeDrive;
 import frc.robot.commands.chassis.TankDrive;
 
@@ -44,13 +48,15 @@ public class RobotContainer {
     // Configure the button bindings
 
     paths = loadPaths(List.of(
-      "MobilityEngage"
+      "Test1"
     ));
 
     m_protoboard = new Protoboard();
     m_joystick = new Joystick(0);
 
     autoLoader = new AutonomousLoader(m_protoboard, paths);
+
+    //SmartDashboard.putData("autoChooser", autoLoader.getSendableChooser());
 
     configureButtonBindings();
   }
@@ -64,6 +70,8 @@ private void configureButtonBindings() {
     JoystickButton enableTestingMotors = new JoystickButton(m_joystick, 2);
     JoystickButton aimAtTarget = new JoystickButton(m_joystick, 3);
     POVButton resetOdometry = new POVButton(m_joystick, 0);
+    POVButton extendSolenoid = new POVButton(m_joystick, 90);
+    POVButton retractSolenoid = new POVButton(m_joystick, 270);
 
     //button execution
     enableTestingMotors.whileTrue(new SetTestingMotors(m_protoboard, 
@@ -73,13 +81,17 @@ private void configureButtonBindings() {
 
     resetOdometry.onTrue(new ResetOdometry(m_protoboard));
 
+    extendSolenoid.onTrue(new SetSolenoid(m_protoboard, Value.kForward));
+    retractSolenoid.onTrue(new SetSolenoid(m_protoboard, Value.kReverse));
+
   }
 
   /**@return The command or command group that will run in autonomous mode */
   public Command getAutonomousCommand() {
     //nothing will run in autonomous
     //return new InstantCommand();
-    return new AimAtTarget(m_protoboard);
+    //return autoLoader.getCurrentSelection();
+    return new Test1(m_protoboard);
   }
 
   /**@return the arcade drive command*/

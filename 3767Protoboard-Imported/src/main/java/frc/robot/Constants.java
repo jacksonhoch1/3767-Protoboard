@@ -24,7 +24,14 @@ public final class Constants {
     public static final double WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER_INCHES * Math.PI;
     public static final double WHEEL_CIRCUMFERENCE_METERS = Units.inchesToMeters(WHEEL_CIRCUMFERENCE_INCHES);
     public static final double COUNTS_PER_METER = (GEAR_RATIO * ENCODER_COUNTS_PER_REV) / WHEEL_CIRCUMFERENCE_METERS;
-    public static final double TRACK_WIDTH = Units.inchesToMeters(22.082);
+    public static final double TRACK_WIDTH = 0.65347;
     public static final DifferentialDriveKinematics driveKinematics = new DifferentialDriveKinematics(TRACK_WIDTH);
+
+    public static final class Chassis {
+        public static final double kS = 0.18426;
+        public static final double kV = 3.8389;
+        public static final double kA = 0.23194;
+        public static final double kP = 3.8503;
+    }
 
 }
