@@ -34,4 +34,13 @@ public final class Constants {
         public static final double kP = 3.8503;
     }
 
+    public static final class Camera {
+        public static final double CAMERA_HEIGHT = Units.inchesToMeters(9.5);     //protoboard on benchtop
+        //public static final double Camera_HEIGHT = Units.inchesToMeters(heigh on robot);    //height on robot
+        public static final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);
+
+        public static final double TARGET_HEIGHT = Units.inchesToMeters(2.5);
+        public static final double GOAL_RANGE_METERS = Units.feetToMeters(1);
+    }
+
 }

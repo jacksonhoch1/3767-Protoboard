@@ -9,11 +9,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Dashboard {
     public static final Entry<Double>
         GYRO_VALUE = Entry.getDoubleEntry("Gyro Value", 0),
-        TURN_TARGET = Entry.getDoubleEntry("Target turning speed", 0.0);
+        TURN_TARGET = Entry.getDoubleEntry("Target turning speed", 0.0),
+        SPEED_TARGET = Entry.getDoubleEntry("Target Speed", 0.0),
+        PID_TUNER = Entry.getDoubleEntry("Tune PID", 0);
     
-        public static final Entry<Boolean>
-            HAS_TARGET = Entry.getBooleanEntry("Has Target", false),
-            PRIMARY_SOLENOID_POSITION = Entry.getBooleanEntry("Primary solenoid position", false);
+    public static final Entry<Boolean>
+        HAS_TARGET = Entry.getBooleanEntry("Has Target", false),
+        PRIMARY_SOLENOID_POSITION = Entry.getBooleanEntry("Primary solenoid position", false);
 
     public Dashboard() {}
 

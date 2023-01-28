@@ -24,8 +24,10 @@ import frc.robot.commands.SetSolenoid;
 //commands
 import frc.robot.commands.SetTestingMotors;
 import frc.robot.commands.auton.AimAtTarget;
+import frc.robot.commands.auton.FollowTarget;
 import frc.robot.commands.auton.ResetOdometry;
 import frc.robot.commands.auton.Test1;
+import frc.robot.commands.auton.getInRangeOfTarget;
 import frc.robot.commands.chassis.ArcadeDrive;
 import frc.robot.commands.chassis.TankDrive;
 
@@ -67,17 +69,23 @@ private void configureButtonBindings() {
     m_protoboard.setDefaultCommand(getArcadeDriveCommand());
 
     //button creation
-    JoystickButton enableTestingMotors = new JoystickButton(m_joystick, 2);
+    JoystickButton getInRangeOfTarget = new JoystickButton(m_joystick, 1);
     JoystickButton aimAtTarget = new JoystickButton(m_joystick, 3);
+    JoystickButton followTarget = new JoystickButton(m_joystick, 2);
+
+    JoystickButton enableTestingMotors = new JoystickButton(m_joystick, 4);
     POVButton resetOdometry = new POVButton(m_joystick, 0);
     POVButton extendSolenoid = new POVButton(m_joystick, 90);
     POVButton retractSolenoid = new POVButton(m_joystick, 270);
+    
 
     //button execution
     enableTestingMotors.whileTrue(new SetTestingMotors(m_protoboard, 
       () -> (m_joystick.getRawAxis(3) + 1) / 2,     //the arithmetic in these lines changes the trigger output 
       () -> (m_joystick.getRawAxis(4) + 1) / 2));   //to be 0.0 to 1.0, instead of -1.0 to 1.0
     aimAtTarget.whileTrue(new AimAtTarget(m_protoboard));
+    getInRangeOfTarget.whileTrue(new getInRangeOfTarget(m_protoboard));
+    followTarget.whileTrue(new FollowTarget(m_protoboard, 1));
 
     resetOdometry.onTrue(new ResetOdometry(m_protoboard));
 
@@ -91,7 +99,7 @@ private void configureButtonBindings() {
     //nothing will run in autonomous
     //return new InstantCommand();
     //return autoLoader.getCurrentSelection();
-    return new Test1(m_protoboard);
+    return new AimAtTarget(m_protoboard);
   }
 
   /**@return the arcade drive command*/

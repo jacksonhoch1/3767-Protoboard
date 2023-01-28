@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -68,7 +69,8 @@ public class Protoboard extends SubsystemBase {
     rightFront = motorBuilder.createFalcon(CAN.rightFront.ID, null, NeutralMode.Brake, false);
     rightRear = motorBuilder.createFalcon(CAN.rightRear.ID, rightFront, NeutralMode.Brake, false);
 
-    primaryDoubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 7, 8);
+    
+    primaryDoubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 5, 7);
     primaryDoubleSolenoid.set(Value.kReverse);
 
 
