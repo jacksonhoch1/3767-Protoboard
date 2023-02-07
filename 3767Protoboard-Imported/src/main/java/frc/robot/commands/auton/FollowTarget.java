@@ -7,7 +7,7 @@ import frc.robot.utils.Dashboard;
 
 public class FollowTarget extends CommandBase{
     private final Protoboard protoboard;
-    private PIDController turnController = new PIDController(0.1, 0, 0.1);
+    private PIDController turnController = new PIDController(0.025, 0, 0);
     private PIDController speedController = new PIDController(0.5, 0, 0);
 
     double turnSpeed, forwardSpeed;
@@ -17,6 +17,10 @@ public class FollowTarget extends CommandBase{
         this.protoboard = protoboard;
         this.targetDistance = targetDistance;
         addRequirements(protoboard);
+
+        turnController.setTolerance(5);
+        // speedController.setTolerance(1);
+
     }
 
     @Override
@@ -27,17 +31,25 @@ public class FollowTarget extends CommandBase{
         var result = protoboard.getCameraResult();
 
         if (result.hasTargets()) {
+            Dashboard.HAS_TARGET.put(true);
             var target = result.getBestTarget();
             double range = target.getBestCameraToTarget().getX();
+            double yaw = target.getYaw();
 
-            forwardSpeed = speedController.calculate(range, targetDistance) * 4;
-            turnSpeed = turnController.calculate(target.getYaw(), 0);
+            if(!turnController.atSetpoint()) {
+                turnSpeed = turnController.calculate(yaw, 0);
+                Dashboard.TURN_TARGET.put(turnSpeed);
+                protoboard.arcadeDrive(0, turnSpeed);
+            } else if (!speedController.atSetpoint()) {
+                forwardSpeed = speedController.calculate(range, targetDistance) * 4;
+                Dashboard.SPEED_TARGET.put(forwardSpeed);
+                protoboard.arcadeDrive(forwardSpeed, 0);
+            }
 
-            protoboard.arcadeDrive(forwardSpeed, turnSpeed * 0.2);
+            
 
-            Dashboard.HAS_TARGET.put(true);
-            Dashboard.SPEED_TARGET.put(forwardSpeed);
-            Dashboard.TURN_TARGET.put(turnSpeed);
+            
+
         } else {
             protoboard.arcadeDrive(0, 0);
             Dashboard.HAS_TARGET.put(false);

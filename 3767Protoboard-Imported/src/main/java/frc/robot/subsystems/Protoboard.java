@@ -1,9 +1,13 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -34,9 +38,11 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.kauailabs.navx.frc.AHRS;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 
@@ -51,10 +57,12 @@ public class Protoboard extends SubsystemBase {
   private DifferentialDriveOdometry odometry;
   private Field2d field = new Field2d();
   private DoubleSolenoid primaryDoubleSolenoid;
-
   private PhotonCamera camera  = new PhotonCamera("OV5647");
+  public AprilTagFieldLayout fieldLayout;
+  private DifferentialDrivePoseEstimator poseEstimator = new DifferentialDrivePoseEstimator(
+    Constants.driveKinematics, getGyroRotation2d(), 0.0, 0.0, new Pose2d());
 
-  public Protoboard() {
+  public Protoboard(RobotContainer robotContainer) {
     //testing motors
     testingFalcon = motorBuilder.createFalcon(CAN.testingFalcon.ID, null, NeutralMode.Brake, false);
     testingNeo = motorBuilder.createNeo(CAN.testingNeo.ID, null, IdleMode.kBrake, false);
@@ -80,6 +88,14 @@ public class Protoboard extends SubsystemBase {
     odometry = new DifferentialDriveOdometry(getGyroRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
 
     SmartDashboard.putData("field", field);
+
+    try {
+      fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+
   }
 
   @Override
@@ -174,9 +190,30 @@ public class Protoboard extends SubsystemBase {
     resetGyro();
   }
 
-  public void resetOdometry(Pose2d pose) {
+  public void resetOdometry() {
     resetAll();
+    odometry.resetPosition(getGyroRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters(), new Pose2d());
+  }
+
+  public void setOdometry(Pose2d pose) {
     odometry.resetPosition(getGyroRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters(), pose);
+  }
+
+  public void updatePoseEstimate() {
+    poseEstimator.update(getGyroRotation2d(), getLeftDistanceMeters(), getRightDistanceMeters());
+
+    var result = getCameraResult();
+    if(result.hasTargets()) {
+      var imageCaptureTime = result.getTimestampSeconds();
+      var camToTargetTrans = result.getBestTarget().getBestCameraToTarget();
+      var camPose = fieldLayout.getTagPose(result.getBestTarget().getFiducialId()).get().transformBy(camToTargetTrans.inverse());
+      poseEstimator.addVisionMeasurement(camPose.toPose2d(), imageCaptureTime);
+
+    }
+  }
+
+  public void addOdometry(Pose2d pose) {
+    
   }
 
   public Pose2d getPose2d() {
@@ -188,7 +225,7 @@ public class Protoboard extends SubsystemBase {
     Map<String, Trajectory> paths = RobotContainer.paths;
     Trajectory traj = RobotContainer.paths.get(trajName);
     SequentialCommandGroup commands = new SequentialCommandGroup();
-    if (resetPose) commands.addCommands(new InstantCommand(() -> resetOdometry(traj.getInitialPose())));
+    if (resetPose) commands.addCommands(new InstantCommand(() -> setOdometry(traj.getInitialPose())));
     commands.addCommands(new InstantCommand(() -> field.getObject("traj").setTrajectory(traj)));
 
     commands.addCommands(new RamseteCommand(

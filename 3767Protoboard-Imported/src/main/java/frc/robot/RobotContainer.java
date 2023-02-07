@@ -8,6 +8,8 @@ import java.util.Map;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 
 import frc.robot.utils.AutonomousLoader;
@@ -30,7 +32,7 @@ import frc.robot.commands.auton.Test1;
 import frc.robot.commands.auton.getInRangeOfTarget;
 import frc.robot.commands.chassis.ArcadeDrive;
 import frc.robot.commands.chassis.TankDrive;
-
+import frc.robot.commands.chassis.UpdateOdometryAT;
 //subsystems
 import frc.robot.subsystems.Protoboard;
 
@@ -38,7 +40,7 @@ import frc.robot.subsystems.Protoboard;
 public class RobotContainer {
   //define the robot's global objects, such as subsystems and controllers
   private final Protoboard m_protoboard;
-  private final Joystick m_joystick;
+  public final Joystick m_joystick;
 
   private final PathConstraints pathConstraints = new PathConstraints(15, 15);
   public static Map<String, Trajectory> paths;
@@ -53,7 +55,7 @@ public class RobotContainer {
       "Test1"
     ));
 
-    m_protoboard = new Protoboard();
+    m_protoboard = new Protoboard(this);
     m_joystick = new Joystick(0);
 
     autoLoader = new AutonomousLoader(m_protoboard, paths);
@@ -72,6 +74,7 @@ private void configureButtonBindings() {
     JoystickButton getInRangeOfTarget = new JoystickButton(m_joystick, 1);
     JoystickButton aimAtTarget = new JoystickButton(m_joystick, 3);
     JoystickButton followTarget = new JoystickButton(m_joystick, 2);
+    JoystickButton updateOdometry = new JoystickButton(m_joystick, 5);
 
     JoystickButton enableTestingMotors = new JoystickButton(m_joystick, 4);
     POVButton resetOdometry = new POVButton(m_joystick, 0);
@@ -87,7 +90,8 @@ private void configureButtonBindings() {
     getInRangeOfTarget.whileTrue(new getInRangeOfTarget(m_protoboard));
     followTarget.whileTrue(new FollowTarget(m_protoboard, 1));
 
-    resetOdometry.onTrue(new ResetOdometry(m_protoboard));
+    resetOdometry.onTrue(new InstantCommand(() -> m_protoboard.setOdometry(new Pose2d(5.0, 5.0, Rotation2d.fromDegrees(0)))));
+    updateOdometry.onTrue(new UpdateOdometryAT(m_protoboard));
 
     extendSolenoid.onTrue(new SetSolenoid(m_protoboard, Value.kForward));
     retractSolenoid.onTrue(new SetSolenoid(m_protoboard, Value.kReverse));
